@@ -50,6 +50,7 @@ exports.listUsers = (req, res) => {
 };
 
 exports.updateBankAccount = async (req, res) => {
+  console.log(req.body)
   try {
     if (req.body.tbc.length !== 22 && req.body.bog.length !== 22) {
       res.status(400).json({ error: "both bank accounts are invalid" });
