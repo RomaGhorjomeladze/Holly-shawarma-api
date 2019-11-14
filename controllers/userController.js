@@ -82,7 +82,17 @@ exports.updateBankAccount = async (req, res) => {
       }
     }
   } catch (error) {
-    res.json(error);
+    res.status(400).json(error);
+  }
+};
+
+exports.getBankAccounts = async (req, res) => {
+  try {
+    User.findOne({ isAdmin: true }, (err, doc) => {
+      res.json(doc.bankAccounts);
+    });
+  } catch (error) {
+    res.status(400).json(error)
   }
 };
 
