@@ -51,35 +51,35 @@ exports.listUsers = (req, res) => {
 
 exports.updateBankAccount = async (req, res) => {
   try {
-    if (Object.keys(req.body).length > 1) {
+    if (req.body.tbc.length !== 22 && req.body.bog.length !== 22) {
+      res.status(400).json({ error: "both bank accounts are invalid" });
+    } else if (req.body.bog.length === 22 && req.body.tbc.length === 22) {
       User.findOneAndUpdate(
         { _id: req.params.id },
         { bankAccounts: req.body },
         { new: true },
         (err, doc) => {
-          res.json(doc);
+          res.status(200).json(doc);
         }
       );
-    } else {
-      if (Object.keys(req.body)[0] === "bog") {
-        User.findOneAndUpdate(
-          { _id: req.params.id },
-          { "bankAccounts.bog": req.body.bog },
-          { new: true },
-          (err, doc) => {
-            res.json(doc);
-          }
-        );
-      } else {
-        User.findOneAndUpdate(
-          { _id: req.params.id },
-          { "bankAccounts.tbc": req.body.tbc },
-          { new: true },
-          (err, doc) => {
-            res.json(doc);
-          }
-        );
-      }
+    } else if (req.body.bog.length === 22) {
+      User.findOneAndUpdate(
+        { _id: req.params.id },
+        { "bankAccounts.bog": req.body.bog },
+        { new: true },
+        (err, doc) => {
+          res.status(200).json(doc);
+        }
+      );
+    } else if (req.body.tbc.length === 22) {
+      User.findOneAndUpdate(
+        { _id: req.params.id },
+        { "bankAccounts.tbc": req.body.tbc },
+        { new: true },
+        (err, doc) => {
+          res.status(200).json(doc);
+        }
+      );
     }
   } catch (error) {
     res.status(400).json(error);
@@ -92,7 +92,7 @@ exports.getBankAccounts = async (req, res) => {
       res.json(doc.bankAccounts);
     });
   } catch (error) {
-    res.status(400).json(error)
+    res.status(400).json(error);
   }
 };
 
