@@ -12,6 +12,14 @@ const userSchema = new mongoose.Schema({
   isAdmin: {
     type: Boolean,
     default: false
+  },
+  bankAccounts: {
+    tbc: {
+      type: String
+    },
+    bog: {
+      type: String
+    }
   }
 });
 

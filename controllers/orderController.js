@@ -20,7 +20,7 @@ exports.orders = async (req, res) => {
       if (err || !orders) {
         return res.json({ error: err });
       }
-      return res.json({ orders: orders });
+      return res.status(200).json({ orders: orders });
     });
 };
 
