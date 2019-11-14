@@ -59,7 +59,7 @@ exports.updateBankAccount = async (req, res) => {
         { bankAccounts: req.body },
         { new: true },
         (err, doc) => {
-          res.status(200).json(doc);
+          res.status(200).json(doc.bankAccounts);
         }
       );
     } else if (req.body.bog.length === 22) {
@@ -68,7 +68,7 @@ exports.updateBankAccount = async (req, res) => {
         { "bankAccounts.bog": req.body.bog },
         { new: true },
         (err, doc) => {
-          res.status(200).json(doc);
+          res.status(200).json(doc.bankAccounts);
         }
       );
     } else if (req.body.tbc.length === 22) {
@@ -77,7 +77,7 @@ exports.updateBankAccount = async (req, res) => {
         { "bankAccounts.tbc": req.body.tbc },
         { new: true },
         (err, doc) => {
-          res.status(200).json(doc);
+          res.status(200).json(doc.bankAccounts);
         }
       );
     }
