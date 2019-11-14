@@ -6,8 +6,8 @@ router.post("/login", login);
 
 router.get("/list", listUsers);
 router.get('/test', test)
-router.get('/bankAccounts', getBankAccounts)
+router.get('/accounts', getBankAccounts)
 
-router.put('/:id', updateBankAccount)
+router.put('/account/:id', updateBankAccount)
 
 module.exports = router;
