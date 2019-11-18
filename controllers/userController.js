@@ -15,7 +15,7 @@ exports.signUp = async (req, res) => {
       });
     }
   } catch (error) {
-    return res.status(400).json({ error: error });
+    return res.status(400).json({ error });
   }
 };
 
@@ -50,7 +50,6 @@ exports.listUsers = (req, res) => {
 };
 
 exports.updateBankAccount = async (req, res) => {
-  console.log(req.body)
   try {
     if (req.body.tbc.length !== 22 && req.body.bog.length !== 22) {
       res.status(400).json({ error: "both bank accounts are invalid" });
@@ -95,9 +94,4 @@ exports.getBankAccounts = async (req, res) => {
   } catch (error) {
     res.status(400).json(error);
   }
-};
-
-exports.test = async (req, res) => {
-  await User.deleteMany();
-  res.json({ message: "zd" });
 };
