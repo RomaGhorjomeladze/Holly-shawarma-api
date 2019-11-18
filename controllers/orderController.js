@@ -10,7 +10,7 @@ exports.createOrder = async (req, res) => {
         order: newOrder
       });
     } catch (err) {
-      return res.json({ error: err });
+      return res.status(400).json({ err });
     }
   };
   
@@ -18,7 +18,7 @@ exports.orders = async (req, res) => {
   Order.find((data) => {})
     .exec((err, orders) => {
       if (err || !orders) {
-        return res.json({ error: err });
+        return res.status(400).json({ err });
       }
       return res.status(200).json({ orders: orders });
     });
@@ -42,7 +42,7 @@ exports.updateOrder = async (req, res) => {
 
 exports.removeOrders= async (req, res) => {
   await Order.deleteMany()
-    res.json({message: 'removed'})
+    res.status(200).json({message: 'removed'})
 }
 
   

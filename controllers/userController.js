@@ -15,7 +15,7 @@ exports.signUp = async (req, res) => {
       });
     }
   } catch (error) {
-    return res.status(400).json({ error: error });
+    return res.status(400).json({ error });
   }
 };
 
@@ -90,9 +90,10 @@ exports.updateBankAccount = async (req, res) => {
 exports.getBankAccounts = async (req, res) => {
   try {
     User.findOne({ isAdmin: true }, (err, doc) => {
-      res.json(doc.bankAccounts);
+      res.status(200).json(doc.bankAccounts);
     });
   } catch (error) {
     res.status(400).json(error);
   }
 };
+
