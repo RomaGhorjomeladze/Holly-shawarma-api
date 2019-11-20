@@ -4,14 +4,17 @@ const bcrypt = require("bcrypt");
 exports.signUp = async (req, res) => {
   try {
     let user = await User.find({ userName: req.body.user.userName });
-    console.log(user);
     if (user.length >= 1) {
       res.status(400).json({ message: "such username already exists" });
     } else {
       bcrypt.hash(req.body.user.password, 10, async (err, hash) => {
         let user = new User({ ...req.body.user, password: hash });
         const newUser = await user.save();
-        return res.status(200).json(newUser);
+        const token = user.generateAuthToken();
+        return res
+          .header("access-token", token)
+          .status(200)
+          .json(newUser);
       });
     }
   } catch (error) {
@@ -21,16 +24,20 @@ exports.signUp = async (req, res) => {
 
 exports.login = async (req, res) => {
   try {
-    let logedInUser = await User.find({
+    let loggedInUser = await User.findOne({
       userName: req.body.user.userName
     });
     const match = await bcrypt.compare(
       req.body.user.password,
-      logedInUser[0].password
+      loggedInUser.password
     );
 
     if (match) {
-      return res.status(200).json(logedInUser[0]);
+      const token = loggedInUser.generateAuthToken();
+      return res
+        .header("access-token", token)
+        .status(200)
+        .json({user: loggedInUser, token});
     } else {
       return res.status(400).json({ error: "Username or Password incorrect" });
     }
@@ -39,8 +46,12 @@ exports.login = async (req, res) => {
   }
 };
 
+exports.isLogedIn = (req, res) => {
+  res.status(200).json({user: req.user, token: req.token});
+};
+
 exports.listUsers = (req, res) => {
-  User.find((err, data) => {
+  User.findOne((err, data) => {
     if (err) throw err;
   })
     .select("userName isAdmin")
@@ -50,12 +61,11 @@ exports.listUsers = (req, res) => {
 };
 
 exports.updateBankAccount = async (req, res) => {
-  console.log(req.body)
   try {
     if (req.body.tbc.length !== 22 && req.body.bog.length !== 22) {
       res.status(400).json({ error: "both bank accounts are invalid" });
     } else if (req.body.bog.length === 22 && req.body.tbc.length === 22) {
-      User.findOneAndUpdate(
+      User.findOneOneAndUpdate(
         { _id: req.params.id },
         { bankAccounts: req.body },
         { new: true },
@@ -64,7 +74,7 @@ exports.updateBankAccount = async (req, res) => {
         }
       );
     } else if (req.body.bog.length === 22) {
-      User.findOneAndUpdate(
+      User.findOneOneAndUpdate(
         { _id: req.params.id },
         { "bankAccounts.bog": req.body.bog },
         { new: true },
@@ -73,7 +83,7 @@ exports.updateBankAccount = async (req, res) => {
         }
       );
     } else if (req.body.tbc.length === 22) {
-      User.findOneAndUpdate(
+      User.findOneOneAndUpdate(
         { _id: req.params.id },
         { "bankAccounts.tbc": req.body.tbc },
         { new: true },
@@ -96,4 +106,3 @@ exports.getBankAccounts = async (req, res) => {
     res.status(400).json(error);
   }
 };
-
