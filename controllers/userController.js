@@ -7,15 +7,17 @@ exports.signUp = async (req, res) => {
     if (user.length >= 1) {
       res.status(400).json({ message: "such username already exists" });
     } else {
-      bcrypt.hash(req.body.user.password, 10, async (err, hash) => {
-        let user = new User({ ...req.body.user, password: hash });
-        const newUser = await user.save();
-        const token = user.generateAuthToken();
+      if (req.body.user.password.trim().length < 6) {
         return res
-          .header("access-token", token)
-          .status(200)
-          .json(newUser);
-      });
+          .status(400)
+          .json({ error: "Password length must be at least 6 characters" });
+      } else {
+        bcrypt.hash(req.body.user.password, 10, async (err, hash) => {
+          let user = new User({ ...req.body.user, password: hash });
+          const newUser = await user.save();
+          return res.status(200).json(newUser);
+        });
+      }
     }
   } catch (error) {
     return res.status(400).json({ error });
@@ -34,10 +36,7 @@ exports.login = async (req, res) => {
 
     if (match) {
       const token = loggedInUser.generateAuthToken();
-      return res
-        .header("access-token", token)
-        .status(200)
-        .json({user: loggedInUser, token});
+      return res.status(200).json({ user: loggedInUser, token });
     } else {
       return res.status(400).json({ error: "Username or Password incorrect" });
     }
@@ -47,7 +46,7 @@ exports.login = async (req, res) => {
 };
 
 exports.isLogedIn = (req, res) => {
-  res.status(200).json({user: req.user, token: req.token});
+  res.status(200).json({ user: req.user, token: req.token });
 };
 
 exports.listUsers = (req, res) => {
@@ -100,7 +99,7 @@ exports.updateBankAccount = async (req, res) => {
 exports.getBankAccounts = async (req, res) => {
   try {
     User.findOne({ isAdmin: true }, (err, doc) => {
-      res.status(200).json(doc.bankAccounts);
+      return res.status(200).json(doc.bankAccounts);
     });
   } catch (error) {
     res.status(400).json(error);
