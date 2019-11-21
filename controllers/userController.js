@@ -30,7 +30,7 @@ exports.login = async (req, res) => {
       userName: req.body.user.userName
     });
     if (!loggedInUser) {
-      return res.status(400).json({ error: "such username isn't exists" });
+      return res.status(400).json({ error: "such username doesn't exists" });
     } else {
       const match = await bcrypt.compare(
         req.body.user.password,
