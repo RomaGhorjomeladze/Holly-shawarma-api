@@ -5,12 +5,12 @@ exports.signUp = async (req, res) => {
   try {
     let user = await User.find({ userName: req.body.user.userName });
     if (user.length >= 1) {
-      res.status(400).json({ message: "such username already exists" });
+      res.status(400).json({ error: "such username already exists" });
     } else {
       if (req.body.user.password.trim().length < 6) {
         return res
           .status(400)
-          .json({ error: "Password length must be at least 6 characters" });
+          .json({ error: "Password\'s length must be at least 6 characters" });
       } else {
         bcrypt.hash(req.body.user.password, 10, async (err, hash) => {
           let user = new User({ ...req.body.user, password: hash });
@@ -29,17 +29,22 @@ exports.login = async (req, res) => {
     let loggedInUser = await User.findOne({
       userName: req.body.user.userName
     });
-    const match = await bcrypt.compare(
-      req.body.user.password,
-      loggedInUser.password
-    );
-
-    if (match) {
-      const token = loggedInUser.generateAuthToken();
-      return res.status(200).json({ user: loggedInUser, token });
+    if (!loggedInUser) {
+      return res.status(400).json({ error: "such username isn't exists" });
     } else {
-      return res.status(400).json({ error: "Username or Password incorrect" });
+      const match = await bcrypt.compare(
+        req.body.user.password,
+        loggedInUser.password
+      );
+      if (match) {
+        const token = loggedInUser.generateAuthToken();
+        return res.status(200).json({ user: loggedInUser, token });
+      } else {
+        return res.status(400).json({ error: "Incorrect password" });
+      }
     }
+
+   
   } catch (error) {
     res.status(404).json({ error });
   }
@@ -50,7 +55,7 @@ exports.isLogedIn = (req, res) => {
 };
 
 exports.listUsers = (req, res) => {
-  User.findOne((err, data) => {
+  User.find((err, data) => {
     if (err) throw err;
   })
     .select("userName isAdmin")
